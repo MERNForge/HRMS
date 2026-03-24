@@ -14,6 +14,6 @@ const attendanceSchema=new mongoose.Schema({
   checkIn:Date,
   checkOut:Date,
   workingHours:Number,
-},{timestamp:true})
+},{timestamps:true})
 
 module.exports=mongoose.model("Attendance",attendanceSchema);

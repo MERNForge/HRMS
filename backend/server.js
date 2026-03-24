@@ -1,8 +1,12 @@
+//third-party modules
 require('dotenv').config();
 const express=require('express');
 const cors=require('cors');
 const connectDB=require('./config/db');
+
+//custom modules
 const authRoutes=require('./routes/authRoutes');
+const departmentRoutes=require('./routes/departmentRoutes');
 
 const app=express();
 app.use(cors());
@@ -14,6 +18,7 @@ app.use('/',(req,res,next)=>{
   next();
 })
 app.use('/api/v1/auth',authRoutes);
+app.use('/api/v1/departments',departmentRoutes);
 
 const PORT=process.env.PORT || 8000;
 const startServer=async()=>{

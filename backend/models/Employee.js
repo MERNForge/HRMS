@@ -17,7 +17,7 @@ const employeeSchema=new mongoose.Schema({
     ref:"Department",
   },
   designation:{
-    String:true,
+    type:String,
     required:true,
   },
   salary:Number,

@@ -13,6 +13,6 @@ const payrollSchema=new mongoose.Schema({
   hra:Number,
   deductions:Number,
   netSalary:Number,
-},{timestamp:true});
+},{timestamps:true});
 
 module.exports=mongoose.model("Payroll",payrollSchema);
