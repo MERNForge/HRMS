@@ -8,6 +8,8 @@ const connectDB=require('./config/db');
 const authRoutes=require('./routes/authRoutes');
 const departmentRoutes=require('./routes/departmentRoutes');
 const employeeRoutes=require('./routes/employeeRoutes');
+const leaveRoutes=require('./routes/leaveRoutes');
+const attendanceRoutes=require('./routes/attendanceRoutes');
 
 const app=express();
 app.use(cors());
@@ -21,6 +23,8 @@ app.use('/',(req,res,next)=>{
 app.use('/api/v1/auth',authRoutes);
 app.use('/api/v1/departments',departmentRoutes);
 app.use('/api/v1/employees',employeeRoutes);
+app.use('/api/v1/leaves',leaveRoutes);
+app.use('/api/v1/attendance',attendanceRoutes);
 
 const PORT=process.env.PORT || 8000;
 const startServer=async()=>{

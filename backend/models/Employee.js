@@ -12,7 +12,7 @@ const employeeSchema=new mongoose.Schema({
     required:true,
   },
   lastName:String,
-  department:{
+  Department:{
     type:mongoose.Schema.Types.ObjectId,
     ref:"Department",
   },
