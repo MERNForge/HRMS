@@ -14,7 +14,7 @@ const applyForLeave=async(req,res)=>{
     await leave.save();
     res.status(201).json({success:true,data:leave}); 
   } catch (error) {
-    res.status(500).json({message:error.message});
+    res.status(500).json({success:false,message:error.message});
   }
 };
 const getAllLeaves=async(req,res)=>{
@@ -22,7 +22,7 @@ const getAllLeaves=async(req,res)=>{
     const leaves=await Leave.find().populate('employeeId','firstName email designation');
     res.status(200).json({success:true,data:leaves});
   } catch (error) {
-    res.status(500).json({message:error.message});
+    res.status(500).json({success:false,message:error.message});
   }
 }
 
@@ -32,7 +32,7 @@ const getEmployeeLeaves=async(req,res)=>{
     const leave=await Leave.find({employeeId});
     res.status(200).json({success:true,data:leave})
   } catch (error) {
-    res.status(500).json({message:error.message});
+    res.status(500).json({success:false,message:error.message});
   }
 };
 
@@ -43,7 +43,7 @@ const updateLeaveStatus=async(req,res)=>{
     const updateLeave=await Leave.findByIdAndUpdate(employeeId,{status},{new:true,runValidators:true});
     res.status(200).json({success:true,data:updateLeave});
   } catch (error) {
-    res.status(500).json({message:error.message});
+    res.status(500).json({success:false,message:error.message});
   }
 };
 
