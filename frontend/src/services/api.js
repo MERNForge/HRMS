@@ -1,66 +1,62 @@
 import axios from 'axios';
+import { clearSession } from '../utils/session';
 
-const API = axios.create({
-  baseURL: 'http://localhost:8000/api/v1',
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/v1';
+
+const apiClient = axios.create({
+  baseURL: API_BASE_URL,
 });
 
-// 🛡️ REQUEST INTERCEPTOR: Inject JWT Token
-API.interceptors.request.use((req) => {
+apiClient.interceptors.request.use((request) => {
   const token = localStorage.getItem('token');
+
   if (token) {
-    req.headers.Authorization = `Bearer ${token}`;
+    request.headers.Authorization = `Bearer ${token}`;
   }
-  return req;
+
+  return request;
 });
 
-// 🏗️ RESPONSE INTERCEPTOR: Global Error Handling & Data Unwrapping
-API.interceptors.response.use(
-  (response) => {
-    // Return only the inner data object (standardized success/data structure)
-    return response.data;
-  },
+apiClient.interceptors.response.use(
+  (response) => response.data,
   (error) => {
-    // Handle Token Expiration (401)
-    if (error.response && error.response.status === 401) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      window.location.href = '/login';
+    if (error?.response?.status === 401) {
+      clearSession();
+      window.location.replace('/login');
     }
+
     return Promise.reject(error);
   }
 );
 
-// --- API ENDPOINTS ---
+export const login = (data) => apiClient.post('/auth/login', data);
+export const register = (data) => apiClient.post('/auth/register', data);
+export const getHRAccounts = () => apiClient.get('/auth/hr-accounts');
+export const getEmployeeAccounts = () => apiClient.get('/auth/employee-accounts');
+export const createHRAccount = (data) => apiClient.post('/auth/create-hr', data);
+export const createEmployeeAccount = (data) => apiClient.post('/auth/create-employee', data);
+export const updateHRAccount = (id, data) => apiClient.put(`/auth/hr-accounts/${id}`, data);
+export const deleteHRAccount = (id) => apiClient.delete(`/auth/hr-accounts/${id}`);
 
-// Auth
-export const login = (data) => API.post('/auth/login', data);
-export const register = (data) => API.post('/auth/register', data);
+export const getDepartments = () => apiClient.get('/departments');
+export const createDepartment = (data) => apiClient.post('/departments/create', data);
 
-// Departments
-export const getDepartments = () => API.get('/departments');
-export const createDepartment = (data) => API.post('/departments/create', data);
+export const getEmployees = () => apiClient.get('/employees');
+export const getEmployeeProfile = (id) => apiClient.get(`/employees/${id}`);
+export const createEmployeeProfile = (data) => apiClient.post('/employees/create', data);
 
-// Employees
-export const getEmployees = () => API.get('/employees');
-export const getEmployeeProfile = (id) => API.get(`/employees/${id}`);
-export const createEmployeeProfile = (data) => API.post('/employees/create', data);
+export const checkIn = () => apiClient.post('/attendance/check-in');
+export const checkOut = () => apiClient.post('/attendance/check-out');
 
-// Attendance
-export const checkIn = () => API.post('/attendance/check-in');
-export const checkOut = () => API.post('/attendance/check-out');
+export const applyLeave = (data) => apiClient.post('/leaves/apply', data);
+export const getMyLeaves = () => apiClient.get('/leaves/my-leaves');
+export const getAllLeaves = () => apiClient.get('/leaves');
+export const updateLeaveStatus = (id, status) => apiClient.put(`/leaves/${id}/status`, { status });
 
-// Leaves
-export const applyLeave = (data) => API.post('/leaves/apply', data);
-export const getMyLeaves = () => API.get('/leaves/my-leaves');
-export const getAllLeaves = () => API.get('/leaves');
-export const updateLeaveStatus = (id, status) => API.put(`/leaves/${id}/status`, { status });
+export const getPayrollRecords = () => apiClient.get('/payroll');
+export const createPayroll = (data) => apiClient.post('/payroll/create', data);
 
-// Payroll
-export const getPayrollRecords = () => API.get('/payroll');
-export const createPayroll = (data) => API.post('/payroll/create', data);
+export const getAnnouncements = () => apiClient.get('/announcements');
+export const postAnnouncement = (data) => apiClient.post('/announcements/create', data);
 
-// Announcements
-export const getAnnouncements = () => API.get('/announcements');
-export const postAnnouncement = (data) => API.post('/announcements/create', data);
-
-export default API;
+export default apiClient;

@@ -1,42 +1,58 @@
 const Announcement = require('../models/Announcement');
+const { handleServerError, sendError, sendSuccess } = require('../utils/http');
 
-const createAnnouncement = async (req, res) => {
+async function createAnnouncement(req, res) {
   const { title, content, targetRole } = req.body;
+
   try {
     const announcement = new Announcement({
       title,
       content,
       targetRole,
-      postedBy: req.user
+      postedBy: req.user,
     });
+
     await announcement.save();
-    res.status(201).json({ success: true, data: announcement });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
-  }
-};
 
-const getAllAnnouncements = async (req, res) => {
+    return sendSuccess(res, {
+      statusCode: 201,
+      data: announcement,
+    });
+  } catch (error) {
+    return handleServerError(res, error);
+  }
+}
+
+async function getAllAnnouncements(req, res) {
   try {
-    // In a real app, you might filter by targetRole based on req.userRole
     const announcements = await Announcement.find().sort({ createdAt: -1 });
-    res.status(200).json({ success: true, data: announcements });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
-  }
-};
 
-const deleteAnnouncement = async (req, res) => {
-  try {
-    await Announcement.findByIdAndDelete(req.params.id);
-    res.status(200).json({ success: true, message: "Announcement deleted" });
+    return sendSuccess(res, {
+      data: announcements,
+    });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    return handleServerError(res, error);
   }
-};
+}
+
+async function deleteAnnouncement(req, res) {
+  try {
+    const announcement = await Announcement.findByIdAndDelete(req.params.id);
+
+    if (!announcement) {
+      return sendError(res, 404, 'Announcement not found');
+    }
+
+    return sendSuccess(res, {
+      message: 'Announcement deleted',
+    });
+  } catch (error) {
+    return handleServerError(res, error);
+  }
+}
 
 module.exports = {
   createAnnouncement,
   getAllAnnouncements,
-  deleteAnnouncement
+  deleteAnnouncement,
 };

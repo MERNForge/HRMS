@@ -1,7 +1,13 @@
-const verifyRole=(role)=>{
-  return (req,res,next)=>{
-    if(!role.includes(req.role))return res.status(403).json({success:false,message:"Access Denied : you don't have permission"})
-    next();
-  }
+const { sendError } = require('../utils/http');
+
+function verifyRole(allowedRoles) {
+  return (req, res, next) => {
+    if (!allowedRoles.includes(req.role)) {
+      return sendError(res, 403, "Access Denied : you don't have permission");
+    }
+
+    return next();
+  };
 }
-module.exports=verifyRole
+
+module.exports = verifyRole;

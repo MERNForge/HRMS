@@ -1,56 +1,77 @@
-const Leave=require('../models/Leave');
-const User=require('../models/User');
+const Leave = require('../models/Leave');
+const { handleServerError, sendError, sendSuccess } = require('../utils/http');
 
-const applyForLeave=async(req,res)=>{
-  const {leaveType,startDate,endDate}=req.body;
-  const employeeId=req.user;//req.user will set on jwt verification,we will send employeeId with jwt on login request
+async function applyForLeave(req, res) {
+  const { leaveType, startDate, endDate } = req.body;
+
   try {
-    const leave=new Leave({
-      employeeId,
+    const leave = new Leave({
+      employeeId: req.user,
       leaveType,
       startDate,
-      endDate
-    })
+      endDate,
+    });
+
     await leave.save();
-    res.status(201).json({success:true,data:leave}); 
+
+    return sendSuccess(res, {
+      statusCode: 201,
+      data: leave,
+    });
   } catch (error) {
-    res.status(500).json({success:false,message:error.message});
-  }
-};
-const getAllLeaves=async(req,res)=>{
-  try {
-    const leaves=await Leave.find().populate('employeeId','firstName email designation');
-    res.status(200).json({success:true,data:leaves});
-  } catch (error) {
-    res.status(500).json({success:false,message:error.message});
+    return handleServerError(res, error);
   }
 }
 
-const getEmployeeLeaves=async(req,res)=>{
-  const employeeId=req.params.id || req.user ;
+async function getAllLeaves(req, res) {
   try {
-    const leave=await Leave.find({employeeId});
-    res.status(200).json({success:true,data:leave})
-  } catch (error) {
-    res.status(500).json({success:false,message:error.message});
-  }
-};
+    const leaves = await Leave.find().populate('employeeId', 'firstName email designation');
 
-const updateLeaveStatus=async(req,res)=>{
-  const employeeId=req.params.id;
-  const {status}=req.body;
+    return sendSuccess(res, {
+      data: leaves,
+    });
+  } catch (error) {
+    return handleServerError(res, error);
+  }
+}
+
+async function getEmployeeLeaves(req, res) {
+  const employeeId = req.params.id || req.user;
+
   try {
-    const updateLeave=await Leave.findByIdAndUpdate(employeeId,{status},{new:true,runValidators:true});
-    res.status(200).json({success:true,data:updateLeave});
+    const leaves = await Leave.find({ employeeId });
+
+    return sendSuccess(res, {
+      data: leaves,
+    });
   } catch (error) {
-    res.status(500).json({success:false,message:error.message});
+    return handleServerError(res, error);
   }
-};
+}
 
+async function updateLeaveStatus(req, res) {
+  try {
+    const leave = await Leave.findByIdAndUpdate(
+      req.params.id,
+      { status: req.body.status },
+      { new: true, runValidators: true }
+    );
 
-module.exports={
+    if (!leave) {
+      return sendError(res, 404, 'leave record not found');
+    }
+
+    return sendSuccess(res, {
+      data: leave,
+    });
+  } catch (error) {
+    return handleServerError(res, error);
+  }
+}
+
+module.exports = {
   applyForLeave,
   getAllLeaves,
   getEmployeeLeaves,
-  updateLeaveStatus
-}
+  updateLeaveStatus,
+};

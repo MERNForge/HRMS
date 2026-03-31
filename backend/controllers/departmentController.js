@@ -1,45 +1,62 @@
-const Department=require('../models/Department');
+const Department = require('../models/Department');
+const { handleServerError, sendError, sendSuccess } = require('../utils/http');
 
-const createDepartment=async(req,res)=>{
-  const {name,description}=req.body;
-  try{
-    const department=await Department.findOne({name});
-    if(department)return res.status(400).json({success:false,message:"department already exists"});
-    const newDepartment=new Department({
+async function createDepartment(req, res) {
+  const { name, description } = req.body;
+
+  try {
+    const existingDepartment = await Department.findOne({ name });
+
+    if (existingDepartment) {
+      return sendError(res, 400, 'department already exists');
+    }
+
+    const department = new Department({
       name,
       description,
     });
-    await newDepartment.save();
-    res.status(201).json({success:true,data:newDepartment});
-  }
-  catch(error){
-    res.status(500).json({success:false,message:error.message});
-  }
-};
 
-const getAllDepartments=async(req,res)=>{
-  try {
-    const departments=await Department.find();
-    if(departments.length===0)return res.status(204).json({success:false,message:"no departments"});
-    res.status(200).json({success:true,data:departments});
+    await department.save();
+
+    return sendSuccess(res, {
+      statusCode: 201,
+      data: department,
+    });
   } catch (error) {
-    res.status(500).json({success:false,message:error.message});
+    return handleServerError(res, error);
   }
-};
+}
 
-const getDepartmentById=async(req,res)=>{
-  const _id=req.params.id;
+async function getAllDepartments(req, res) {
   try {
-    const department=await Department.findById(_id);
-    if(!department)return res.status(404).json({success:false,message:"department not found"});
-    res.status(200).json({success:true,data:department});
-  } catch (error) {
-    res.status(500).json({success:false,message:error.message});
-  }
-};
+    const departments = await Department.find();
 
-module.exports={
+    return sendSuccess(res, {
+      data: departments,
+    });
+  } catch (error) {
+    return handleServerError(res, error);
+  }
+}
+
+async function getDepartmentById(req, res) {
+  try {
+    const department = await Department.findById(req.params.id);
+
+    if (!department) {
+      return sendError(res, 404, 'department not found');
+    }
+
+    return sendSuccess(res, {
+      data: department,
+    });
+  } catch (error) {
+    return handleServerError(res, error);
+  }
+}
+
+module.exports = {
   createDepartment,
   getAllDepartments,
   getDepartmentById,
-}
+};

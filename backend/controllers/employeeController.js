@@ -1,52 +1,85 @@
-const Employee=require('../models/Employee');
-const User=require('../models/User');
+const Employee = require('../models/Employee');
+const User = require('../models/User');
+const { handleServerError, sendError, sendSuccess } = require('../utils/http');
 
-const createEmployeeProfile=async(req,res)=>{
-  const {userId,firstName,lastName,designation,salary,department}=req.body;
+async function createEmployeeProfile(req, res) {
+  const { userId, firstName, lastName, designation, salary, department } = req.body;
+
   try {
-    const user=await User.findById(userId);
-    if(!user)return res.status(404).json({success:false,message:"user not found"});
-    const employee=await Employee.findOne({User:userId});
-    if(employee)return res.status(400).json({message:"employee already exists"});
-    const newEmployee=new Employee({
-      User:userId,
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return sendError(res, 404, 'user not found');
+    }
+
+    if (user.role !== 'employee') {
+      return sendError(res, 400, 'profile can only be created for employee accounts');
+    }
+
+    const existingEmployee = await Employee.findOne({ User: userId });
+
+    if (existingEmployee) {
+      return sendError(res, 400, 'employee already exists');
+    }
+
+    const employee = new Employee({
+      User: userId,
       firstName,
       lastName,
-      Department:department,
+      Department: department,
       designation,
-      salary
+      salary,
     });
-    await newEmployee.save();
-    res.status(201).json({success:true,data:newEmployee});
-  } catch (error) {
-    res.status(500).json({success:false,message:error.message});
-  }
-};
 
-const getAllEmployees=async(req,res)=>{
-  try {
-    const employees=await Employee.find().populate("User","email role isActive").populate('Department','name')
-    if(employees.length===0)return res.json({success:false,message:"no employees"});
-    res.json({success:true,data:employees});
+    await employee.save();
+
+    return sendSuccess(res, {
+      statusCode: 201,
+      data: employee,
+    });
   } catch (error) {
-    res.json({success:false,message:error.message});
+    return handleServerError(res, error);
   }
 }
 
-const getEmployeeById=async(req,res)=>{
-  const _id=req.params.id;
-  if(req.role!=='admin' && req.user!==_id)return res.status(403).json({success:false,message:"forbidden : you don't have permission"})
+async function getAllEmployees(req, res) {
   try {
-    const employee=await Employee.findById(_id);
-    if(!employee)return res.status(404).json({success:false,message:"employee not found"});
-    res.json({success:true,data:employee});
+    const employees = await Employee.find()
+      .populate('User', 'loginId email role isActive')
+      .populate('Department', 'name');
+
+    return sendSuccess(res, {
+      data: employees,
+    });
   } catch (error) {
-    res.status(500).json({success:false,message:error.message});
+    return handleServerError(res, error);
   }
 }
 
-module.exports={
+async function getEmployeeById(req, res) {
+  try {
+    const employee = await Employee.findById(req.params.id)
+      .populate('User', 'loginId email role isActive')
+      .populate('Department', 'name');
+
+    if (!employee) {
+      return sendError(res, 404, 'employee not found');
+    }
+
+    if (req.role === 'employee' && employee.User?._id?.toString() !== req.userId) {
+      return sendError(res, 403, "forbidden : you don't have permission");
+    }
+
+    return sendSuccess(res, {
+      data: employee,
+    });
+  } catch (error) {
+    return handleServerError(res, error);
+  }
+}
+
+module.exports = {
   createEmployeeProfile,
   getAllEmployees,
-  getEmployeeById
-}
+  getEmployeeById,
+};

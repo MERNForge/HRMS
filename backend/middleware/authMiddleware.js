@@ -1,19 +1,28 @@
-const jwt=require('jsonwebtoken');
+const { sendError } = require('../utils/http');
 const { verifyToken } = require('../utils/verifyToken');
 
-const protected=async(req,res,next)=>{
-  const authHeader=req.headers.authorization;
-  if(!authHeader)return res.status(400).json({success:false,message:"no token"});
-  if(authHeader.split(' ')[0]!=='Bearer')return res.status(400).json({success:true,message:"invalid token format"});
-  const header=authHeader.split(' ')[1];
-  try {
-    const decoded=verifyToken(header);
-    req.user=decoded.userId;
-    req.role=decoded.role;
-    next();
-  } catch (error) {
-    res.status(401).json({success:false,message:"not authorized"});
-  }
-};
+function protect(req, res, next) {
+  const authHeader = req.headers.authorization;
 
-module.exports=protected;
+  if (!authHeader) {
+    return sendError(res, 401, 'no token');
+  }
+
+  const [scheme, token] = authHeader.split(' ');
+
+  if (scheme !== 'Bearer' || !token) {
+    return sendError(res, 401, 'invalid token format');
+  }
+
+  try {
+    const decoded = verifyToken(token);
+    req.user = decoded.userId;
+    req.userId = decoded.userId;
+    req.role = decoded.role;
+    return next();
+  } catch (error) {
+    return sendError(res, 401, 'not authorized');
+  }
+}
+
+module.exports = protect;

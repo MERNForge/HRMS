@@ -1,12 +1,16 @@
-const express =require('express')
-const employeeController=require('../controllers/employeeController');
-const protected=require('../middleware/authMiddleware')
-const verifyRole=require('../middleware/roleMiddleware');
+const express = require('express');
+const {
+  createEmployeeProfile,
+  getAllEmployees,
+  getEmployeeById,
+} = require('../controllers/employeeController');
+const protect = require('../middleware/authMiddleware');
+const verifyRole = require('../middleware/roleMiddleware');
 
-const router=express.Router();
+const router = express.Router();
 
-router.post('/create',protected,verifyRole(['employee','hr','admin']),employeeController.createEmployeeProfile);
-router.get('/',protected,verifyRole(['admin']),employeeController.getAllEmployees);
-router.get('/:id',protected,verifyRole(['employee','hr','admin']),employeeController.getEmployeeById);
+router.post('/create', protect, verifyRole(['hr', 'admin']), createEmployeeProfile);
+router.get('/', protect, verifyRole(['admin']), getAllEmployees);
+router.get('/:id', protect, verifyRole(['employee', 'hr', 'admin']), getEmployeeById);
 
-module.exports=router;
+module.exports = router;
