@@ -27,7 +27,6 @@
 - [Getting Started](#-getting-started)
 - [Environment Variables](#-environment-variables)
 - [API Overview](#-api-overview)
-- [Screenshots](#-screenshots)
 - [Live Demo](#-live-demo)
 - [Contributing](#-contributing)
 - [Contact](#-contact)
@@ -36,7 +35,7 @@
 
 ## 🔍 Overview
 
-*HRMS* is a comprehensive Human Resource Management System designed to digitize and simplify HR operations for organizations of any size. Built with a modern *MERN* stack architecture, it provides a seamless experience for both *admins* and *employees* through a role-based access system.
+**HRMS** is a comprehensive Human Resource Management System designed to digitize and simplify HR operations for organizations of any size. Built with a modern **MERN** stack architecture, it provides a seamless experience for both **admins** and **employees** through a role-based access system.
 
 Whether you're managing a team of 10 or 1000, HRMS gives you the tools to handle employee records, track daily attendance, process leave applications, and monitor organizational performance — all from an intuitive dashboard.
 
@@ -61,7 +60,7 @@ Whether you're managing a team of 10 or 1000, HRMS gives you the tools to handle
 
 ### 🔐 Role-Based Authentication
 - Secure JWT-based login system
-- Two roles: *Admin* and *Employee*
+- Two roles: **Admin** and **Employee**
 - Route protection based on user role
 
 ### 📊 Admin Dashboard & Analytics
@@ -74,44 +73,44 @@ Whether you're managing a team of 10 or 1000, HRMS gives you the tools to handle
 
 ---
 
-## 🛠️ Tech Stack
+## 🛠 Tech Stack
 
 | Layer | Technology |
 |---|---|
-| *Frontend* | React.js, Tailwind CSS |
-| *Backend* | Node.js, Express.js |
-| *Database* | MongoDB (Mongoose ODM) |
-| *Auth* | JWT (JSON Web Tokens) |
-| *API Testing* | Postman |
-| *Version Control* | Git & GitHub |
-| *Deployment* | Vercel (Frontend) |
+| **Frontend** | React.js, Tailwind CSS |
+| **Backend** | Node.js, Express.js |
+| **Database** | MongoDB (Mongoose ODM) |
+| **Auth** | JWT (JSON Web Tokens) |
+| **API Testing** | Postman |
+| **Version Control** | Git & GitHub |
+| **Deployment** | Vercel (Frontend) |
 
 ---
 
 ## 📂 Project Structure
 
-
+```bash
 HRMS/
-├── frontend/                   # React.js client
-│   ├── public/
-│   └── src/
-│       ├── components/         # Reusable UI components
-│       ├── pages/              # Route-level pages (Dashboard, Employees, etc.)
-│       ├── context/            # Auth context / state management
-│       ├── services/           # API call functions (axios)
-│       └── App.js
-│
-├── backend/                    # Node.js + Express server
-│   ├── config/                 # DB connection setup
-│   ├── controllers/            # Route logic (employees, attendance, leaves)
-│   ├── middleware/             # Auth middleware (JWT verification)
-│   ├── models/                 # Mongoose schemas
-│   ├── routes/                 # API route definitions
-│   └── server.js
-│
-├── package-lock.json
-└── README.md
-
+ ├── frontend/               # React.js client
+ │    ├── public/
+ │    └── src/
+ │         ├── components/   # Reusable UI components
+ │         ├── pages/        # Dashboard, Employees, Attendance, Leaves
+ │         ├── context/      # Auth context & global state
+ │         ├── services/     # Axios API call functions
+ │         └── App.js
+ │
+ ├── backend/                # Node.js + Express server
+ │    ├── config/            # MongoDB connection setup
+ │    ├── controllers/       # Business logic (employees, attendance, leaves)
+ │    ├── middleware/        # JWT auth middleware
+ │    ├── models/            # Mongoose schemas
+ │    ├── routes/            # API route definitions
+ │    └── server.js          # App entry point
+ │
+ ├── package-lock.json
+ └── README.md
+```
 
 ---
 
@@ -127,52 +126,52 @@ Make sure you have the following installed:
 
 ### 1️⃣ Clone the Repository
 
-bash
+```bash
 git clone https://github.com/MERNForge/HRMS.git
 cd HRMS
-
+```
 
 ### 2️⃣ Install Frontend Dependencies
 
-bash
+```bash
 cd frontend
 npm install
-
+```
 
 ### 3️⃣ Install Backend Dependencies
 
-bash
+```bash
 cd ../backend
 npm install
-
+```
 
 ### 4️⃣ Configure Environment Variables
 
-Create a .env file inside the /backend directory (see [Environment Variables](#-environment-variables)).
+Create a `.env` file inside the `/backend` directory (see [Environment Variables](#-environment-variables)).
 
 ### 5️⃣ Run the Application
 
-*Start the backend server:*
-bash
+**Start the backend server:**
+```bash
 cd backend
 npm run dev
+```
 
-
-*Start the frontend dev server:*
-bash
+**Start the frontend dev server:**
+```bash
 cd frontend
 npm start
+```
 
-
-The app will be running at http://localhost:3000 and the API at http://localhost:5000.
+The app will be running at `http://localhost:3000` and the API at `http://localhost:5000`.
 
 ---
 
 ## 🔐 Environment Variables
 
-Create a .env file in the /backend folder with the following variables:
+Create a `.env` file in the `/backend` folder with the following variables:
 
-env
+```env
 # MongoDB Connection String
 MONGO_URI=your_mongodb_connection_string
 
@@ -181,7 +180,7 @@ JWT_SECRET=your_jwt_secret_key
 
 # Server Port
 PORT=5000
-
+```
 
 > 💡 For MongoDB, you can use a free cluster from [MongoDB Atlas](https://www.mongodb.com/cloud/atlas).
 
@@ -191,16 +190,15 @@ PORT=5000
 
 | Method | Endpoint | Description | Auth |
 |---|---|---|---|
-| POST | /api/auth/login | Login user | ❌ |
-| GET | /api/employees | Get all employees | ✅ Admin |
-| POST | /api/employees | Add new employee | ✅ Admin |
-| PUT | /api/employees/:id | Update employee | ✅ Admin |
-| DELETE | /api/employees/:id | Delete employee | ✅ Admin |
-| POST | /api/attendance | Mark attendance | ✅ |
-| GET | /api/attendance/:id | Get attendance record | ✅ |
-| POST | /api/leaves | Apply for leave | ✅ Employee |
-| PUT | /api/leaves/:id | Approve/Reject leave | ✅ Admin |
-| GET | /api/dashboard | Get dashboard stats | ✅ Admin |
+| `GET` | `/api/employees` | Get all employees | ✅ Admin |
+| `POST` | `/api/employees` | Add new employee | ✅ Admin |
+| `PUT` | `/api/employees/:id` | Update employee | ✅ Admin |
+| `DELETE` | `/api/employees/:id` | Delete employee | ✅ Admin |
+| `POST` | `/api/attendance` | Mark attendance | ✅ |
+| `GET` | `/api/attendance/:id` | Get attendance record | ✅ |
+| `POST` | `/api/leaves` | Apply for leave | ✅ Employee |
+| `PUT` | `/api/leaves/:id` | Approve/Reject leave | ✅ Admin |
+| `GET` | `/api/dashboard` | Get dashboard stats | ✅ Admin |
 
 ---
 
@@ -210,7 +208,7 @@ PORT=5000
 
 You can explore the live deployment of the frontend on Vercel.
 
-*Demo Credentials:*
+**Demo Credentials:**
 
 | Role | Email | Password |
 |---|---|---|
@@ -223,11 +221,11 @@ You can explore the live deployment of the frontend on Vercel.
 
 Contributions are always welcome! Here's how to get started:
 
-1. *Fork* the repository
-2. Create a new branch: git checkout -b feature/your-feature-name
-3. Make your changes and commit: git commit -m "feat: add your feature"
-4. Push to your branch: git push origin feature/your-feature-name
-5. Open a *Pull Request*
+1. **Fork** the repository
+2. Create a new branch: `git checkout -b feature/your-feature-name`
+3. Make your changes and commit: `git commit -m "feat: add your feature"`
+4. Push to your branch: `git push origin feature/your-feature-name`
+5. Open a **Pull Request**
 
 Please make sure your code follows consistent formatting and includes relevant comments.
 
@@ -235,13 +233,13 @@ Please make sure your code follows consistent formatting and includes relevant c
 
 ## 📄 License
 
-This project is licensed under the *MIT License* — feel free to use, modify, and distribute it.
+This project is licensed under the **MIT License** — feel free to use, modify, and distribute it.
 
 ---
 
 ## 📧 Contact
 
-*Deepanshu Sharma*
+**Deepanshu Sharma**
 
 [![Email](https://img.shields.io/badge/Email-sharmadeepanshu0003@gmail.com-D14836?style=flat-square&logo=gmail&logoColor=white)](mailto:sharmadeepanshu0003@gmail.com)
 [![GitHub](https://img.shields.io/badge/GitHub-MERNForge-181717?style=flat-square&logo=github)](https://github.com/MERNForge)
@@ -252,6 +250,6 @@ This project is licensed under the *MIT License* — feel free to use, modify, a
 
 ### ⭐ If you found this project helpful, please give it a star!
 
-It motivates continued development and improvement.
+*It motivates continued development and improvement.*
 
 </div>
